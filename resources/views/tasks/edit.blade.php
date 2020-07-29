@@ -6,7 +6,7 @@
     
     <div class="row">
         <div class="col-6">
-            {!! Form::model('$task', ['route' => 'tasks.update', '$task->id'], 'method' => 'put') !!}
+            {!! Form::model($task, ['route' => ['tasks.update', $task->id], 'method' => 'put']) !!}
             
                 <div class="form-group">
                     {!! Form::label('content', 'タスク:') !!}
@@ -15,7 +15,7 @@
                 
                 <div class="form-group">
                     {!! Form::label('status', 'ステータス:') !!}
-                    {!! Form::input('status', null, ['class' => 'form-control', 'type' => 'text']) !!}
+                    {!! Form::text('status', null, ['class' => 'form-control']) !!}
                 </div>
                 
                 {!! Form::submit('更新', ['class' => 'btn btn-primary']) !!}
