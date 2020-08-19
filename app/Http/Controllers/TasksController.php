@@ -15,11 +15,21 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $data = [];
+        $tasks = [];
+        if (\Auth::check()) { // 認証済みの場合
+            // 認証済みユーザを取得
+            $user = \Auth::user();
+            
+            $tasks = $user->tasks()->get();
+            
+           /* $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];*/
+        }
         
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+        return view('tasks.index', ['tasks' => $tasks]);
     }
 
     /**
@@ -48,10 +58,10 @@ class TasksController extends Controller
             'status' => 'required|max:10',
         ]);
         
-        $task = new Task;
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
+       $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);
         
         return redirect('/');
     }
@@ -69,6 +79,8 @@ class TasksController extends Controller
         return view('tasks.show', [
             'task' => $task,
         ]);
+        
+        return redirect('/');
     }
 
     /**
@@ -84,6 +96,7 @@ class TasksController extends Controller
         return view('tasks.edit', [
             'task' => $task,
         ]);
+       
     }
 
     /**
@@ -118,7 +131,9 @@ class TasksController extends Controller
     {
         $task = Task::findOrFail($id);
         
-        $task->delete();
+        if (\Auth::id() === $task->user_id) {
+            $task->delete();
+        }
         
         return redirect('/');
     }
